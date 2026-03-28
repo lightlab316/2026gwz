@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crystal Throne Scroll Build</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      font-family: "Noto Sans TC", sans-serif;
+      background:
+        radial-gradient(circle at top, #fffdfd 0%, #f7f1ff 38%, #edf7ff 100%);
+      color: #6f6692;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+      user-select: none;
+      -webkit-user-drag: none;
+      pointer-events: none;
+    }
+
+    .intro,
+    .outro {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 32px 20px;
+      text-align: center;
+    }
+
+    .intro h1,
+    .outro h2 {
+      margin: 0 0 12px;
+      font-size: clamp(28px, 4vw, 48px);
+      color: #8269b6;
+    }
+
+    .intro p,
+    .outro p {
+      margin: 0;
+      font-size: clamp(14px, 1.6vw, 18px);
+      line-height: 1.8;
+      opacity: 0.82;
+    }
+
+    .throne-scroll {
+      position: relative;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 20px 0;
+    }
+
+    .throne-sticky {
+      position: relative;
+      width: min(980px, 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow: visible;
+    }
+
+    .product-layout {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      width: 100%;
+    }
+
+    .scene-bg {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 50% 48%, rgba(255, 212, 240, 0.22), transparent 18%),
+        radial-gradient(circle at 50% 68%, rgba(202, 238, 255, 0.18), transparent 20%),
+        radial-gradient(circle at 50% 16%, rgba(255, 255, 255, 0.92), transparent 26%);
+      filter: blur(18px);
+      opacity: 0.9;
+    }
+
+    .phone-frame {
+      position: relative;
+      width: min(380px, 88vw);
+      aspect-ratio: 9 / 16;
+      border-radius: 34px;
+      padding: 10px;
+      background: linear-gradient(180deg, #ffffff, #f4edff);
+      box-shadow:
+        0 24px 80px rgba(121, 96, 177, 0.16),
+        0 8px 24px rgba(121, 96, 177, 0.08),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.85);
+      z-index: 2;
+    }
+
+    .gems-side {
+      width: min(220px, 28vw);
+      padding: 18px 16px;
+      border-radius: 28px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(226, 214, 255, 0.8);
+      box-shadow:
+        0 18px 48px rgba(121, 96, 177, 0.12),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(12px);
+      z-index: 2;
+    }
+
+    .progress-card {
+      margin-bottom: 14px;
+      padding: 14px;
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(247,240,255,0.92));
+      box-shadow:
+        0 12px 30px rgba(121, 96, 177, 0.12),
+        inset 0 0 0 1px rgba(232, 222, 255, 0.9);
+    }
+
+    .progress-card-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: #8b72bb;
+      margin-bottom: 4px;
+    }
+
+    .progress-card-percent {
+      font-size: 30px;
+      line-height: 1;
+      font-weight: 800;
+      color: #6f52aa;
+      margin-bottom: 10px;
+    }
+
+    .progress-card-stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .progress-stat {
+      padding: 10px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.8);
+      box-shadow: inset 0 0 0 1px rgba(228, 216, 255, 0.85);
+    }
+
+    .progress-stat-label {
+      display: block;
+      font-size: 11px;
+      color: rgba(111, 102, 146, 0.82);
+      margin-bottom: 4px;
+    }
+
+    .progress-stat-value {
+      display: block;
+      font-size: 14px;
+      color: #6f52aa;
+    }
+
+    .gems-side-title {
+      margin: 0 0 6px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #8269b6;
+      letter-spacing: 0.04em;
+    }
+
+    .gems-side-subtitle {
+      margin: 0 0 14px;
+      font-size: 12px;
+      line-height: 1.7;
+      color: rgba(111, 102, 146, 0.82);
+    }
+
+    .gem-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .gem-chip {
+      appearance: none;
+      border: 0;
+      padding: 8px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.75);
+      box-shadow:
+        inset 0 0 0 1px rgba(219, 206, 248, 0.72),
+        0 8px 20px rgba(156, 129, 205, 0.12);
+      cursor: pointer;
+      transition: transform .2s ease, box-shadow .2s ease, opacity .2s ease;
+    }
+
+    .gem-chip:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        inset 0 0 0 1px rgba(219, 206, 248, 0.88),
+        0 12px 24px rgba(156, 129, 205, 0.18);
+    }
+
+    .gem-chip.is-locked {
+      opacity: 0.28;
+      filter: grayscale(1);
+      cursor: default;
+    }
+
+    .gem-chip img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: contain;
+      pointer-events: none;
+    }
+
+    .gem-chip-index {
+      display: block;
+      margin-top: 4px;
+      font-size: 11px;
+      color: #7b67a9;
+      text-align: center;
+    }
+
+    .gem-modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(82, 63, 126, 0.26);
+      backdrop-filter: blur(10px);
+      z-index: 100;
+    }
+
+    .gem-modal.is-open {
+      display: flex;
+    }
+
+    .gem-modal-panel {
+      position: relative;
+      width: min(360px, 100%);
+      padding: 18px 18px 20px;
+      border-radius: 28px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,242,255,0.96));
+      box-shadow: 0 22px 64px rgba(121, 96, 177, 0.24);
+    }
+
+    .gem-modal-close {
+      appearance: none;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 34px;
+      height: 34px;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(237, 230, 255, 0.9);
+      color: #7b67a9;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .gem-modal-preview {
+      width: min(220px, 70%);
+      margin: 8px auto 14px;
+    }
+
+    .gem-modal-title {
+      margin: 0 0 6px;
+      font-size: 18px;
+      text-align: center;
+      color: #8269b6;
+    }
+
+    .gem-modal-text {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.9;
+      text-align: left;
+      color: rgba(111, 102, 146, 0.88);
+      white-space: pre-line;
+    }
+
+    .phone-frame::before {
+      content: "";
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 34%;
+      height: 18px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.75);
+      box-shadow: inset 0 0 0 1px rgba(130, 105, 182, 0.1);
+      z-index: 30;
+    }
+
+    .phone-screen {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      border-radius: 26px;
+      background:
+        radial-gradient(circle at 50% 18%, rgba(255,255,255,0.98), rgba(248,242,255,0.95) 42%, rgba(238,246,255,0.96) 100%);
+    }
+
+    .phone-screen::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(to bottom, rgba(255,255,255,0.28), transparent 20%, transparent 80%, rgba(255,255,255,0.12));
+      z-index: 1;
+    }
+
+    .hint {
+      position: absolute;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 25;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.55);
+      border: 1px solid rgba(226, 214, 255, 0.72);
+      box-shadow: 0 10px 30px rgba(145, 118, 201, 0.12);
+      backdrop-filter: blur(10px);
+      font-size: 13px;
+      color: #7b67a9;
+      white-space: nowrap;
+    }
+
+    .throne-wrap {
+      position: absolute;
+      left: 50%;
+      bottom: -1%;
+      width: 118%;
+      aspect-ratio: 1 / 1.35;
+      transform: translateX(-50%);
+      transform-origin: center bottom;
+      z-index: 2;
+    }
+
+    .layer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      transform-origin: center bottom;
+      will-change: transform, opacity;
+    }
+
+    .platform  { z-index: 1; opacity: 0; }
+    .base-gems { z-index: 2; opacity: 0; }
+    .seat-base { z-index: 3; opacity: 0; }
+    .arm-left  { z-index: 4; opacity: 0; }
+    .arm-right { z-index: 4; opacity: 0; }
+    .back-core { z-index: 5; opacity: 0; }
+    .top-gem   { z-index: 6; opacity: 0; }
+    .extra-8   { z-index: 7; opacity: 0; }
+    .extra-9   { z-index: 8; opacity: 0; }
+    .extra-10  { z-index: 9; opacity: 0; }
+    .sparkles  {
+      z-index: 8;
+      opacity: 0;
+      mix-blend-mode: screen;
+    }
+
+    .progress-ui {
+      position: absolute;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%);
+      width: calc(100% - 28px);
+      max-width: 320px;
+      z-index: 25;
+      pointer-events: none;
+    }
+
+    .progress-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      color: rgba(111, 102, 146, 0.92);
+    }
+
+    .progress-bar {
+      position: relative;
+      height: 10px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.6);
+      box-shadow:
+        inset 0 0 0 1px rgba(217, 204, 248, 0.72),
+        0 8px 20px rgba(156, 129, 205, 0.12);
+      backdrop-filter: blur(8px);
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #ffd7ef 0%, #c9eeff 52%, #fff0b2 100%);
+      box-shadow: 0 0 18px rgba(255, 212, 240, 0.75);
+    }
+
+    @media (max-width: 768px) {
+      /* .throne-scroll {
+        height: 360vh;
+      } */
+
+      .phone-frame {
+        width: min(360px, 92vw);
+        border-radius: 30px;
+      }
+
+      .phone-screen {
+        border-radius: 22px;
+      }
+
+      .hint {
+        top: 24px;
+        font-size: 12px;
+        padding: 9px 14px;
+      }
+    }
+  
+    @media (max-width: 860px) {
+      .product-layout {
+        flex-direction: column;
+      }
+
+      .gems-side {
+        width: min(420px, 92vw);
+      }
+
+      .gem-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 560px) {
+      /* .throne-scroll, */
+      .throne-sticky {
+        padding: 12px;
+      }
+
+      .phone-frame {
+        width: min(360px, 92vw);
+      }
+
+      .gems-side {
+        padding: 14px;
+        border-radius: 22px;
+      }
+
+      .gem-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+
+
+  <section class="throne-scroll" id="throneScroll">
+    <div class="throne-sticky">
+      <div class="scene-bg"></div>
+
+      <div class="product-layout">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="hint" id="buildHint">寶石作品開始建設 ✨</div>
+
+            <div class="throne-wrap" id="throneWrap">
+              <img class="layer platform"  src="./assets/gem-01.png"  alt="platform" />
+              <img class="layer base-gems" src="./assets/gem-02.png" alt="base gems" />
+              <img class="layer seat-base" src="./assets/gem-03.png" alt="seat base" />
+              <img class="layer arm-left"  src="./assets/gem-04.png"  alt="left arm" />
+              <img class="layer arm-right" src="./assets/gem-05.png" alt="right arm" />
+              <img class="layer back-core" src="./assets/gem-06.png" alt="back core" />
+              <img class="layer top-gem"   src="./assets/gem-07.png"   alt="top gem" />
+              <img class="layer extra-8"   src="./assets/gem-08.png"   alt="extra gem 8" />
+              <img class="layer extra-9"   src="./assets/gem-09.png"   alt="extra gem 9" />
+              <img class="layer extra-10"  src="./assets/gem-10.png"   alt="extra gem 10" />
+
+              <img class="layer sparkles" src="./assets/sparkles.png" alt="sparkles" />
+            </div>
+
+            <div class="progress-ui">
+              <div class="progress-label">
+                <span>BUILD PROGRESS</span>
+                <span id="progressText">0%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="gems-side" aria-label="寶石列表">
+          <div class="progress-card">
+            <div class="progress-card-label">目前進度</div>
+            <div class="progress-card-percent" id="progressCardPercent">0%</div>
+            <div class="progress-card-stats">
+              <div class="progress-stat">
+                <span class="progress-stat-label">目前累積</span>
+                <strong class="progress-stat-value" id="currentValueText">0</strong>
+              </div>
+              <div class="progress-stat">
+                <span class="progress-stat-label">目標</span>
+                <strong class="progress-stat-value" id="goalValueText">0</strong>
+              </div>
+            </div>
+          </div>
+
+          <h3 class="gems-side-title">寶石收藏</h3>
+          <p class="gems-side-subtitle">會依目前進度顯示已解鎖的寶石，點擊寶石可開啟小視窗。</p>
+          <div class="gem-grid" id="gemGrid">
+            <button class="gem-chip" type="button" data-gem-index="1"><img src="./assets/gem01.png" alt="寶石 1" /><span class="gem-chip-index">#01</span></button>
+            <button class="gem-chip" type="button" data-gem-index="2"><img src="./assets/gem02.png" alt="寶石 2" /><span class="gem-chip-index">#02</span></button>
+            <button class="gem-chip" type="button" data-gem-index="3"><img src="./assets/gem03.png" alt="寶石 3" /><span class="gem-chip-index">#03</span></button>
+            <button class="gem-chip" type="button" data-gem-index="4"><img src="./assets/gem04.png" alt="寶石 4" /><span class="gem-chip-index">#04</span></button>
+            <button class="gem-chip" type="button" data-gem-index="5"><img src="./assets/gem05.png" alt="寶石 5" /><span class="gem-chip-index">#05</span></button>
+            <button class="gem-chip" type="button" data-gem-index="6"><img src="./assets/gem06.png" alt="寶石 6" /><span class="gem-chip-index">#06</span></button>
+            <button class="gem-chip" type="button" data-gem-index="7"><img src="./assets/gem07.png" alt="寶石 7" /><span class="gem-chip-index">#07</span></button>
+            <button class="gem-chip" type="button" data-gem-index="8"><img src="./assets/gem08.png" alt="寶石 8" /><span class="gem-chip-index">#08</span></button>
+            <button class="gem-chip" type="button" data-gem-index="9"><img src="./assets/gem09.png" alt="寶石 9" /><span class="gem-chip-index">#09</span></button>
+            <button class="gem-chip" type="button" data-gem-index="10"><img src="./assets/gem10.png" alt="寶石 10" /><span class="gem-chip-index">#10</span></button>
+            <button class="gem-chip" type="button" data-gem-index="11"><img src="./assets/gem11.png" alt="寶石 11" /><span class="gem-chip-index">#11</span></button>
+            <button class="gem-chip" type="button" data-gem-index="12"><img src="./assets/gem12.png" alt="寶石 12" /><span class="gem-chip-index">#12</span></button>
+            <button class="gem-chip" type="button" data-gem-index="13"><img src="./assets/gem13.png" alt="寶石 13" /><span class="gem-chip-index">#13</span></button>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <div class="gem-modal" id="gemModal" aria-hidden="true">
+    <div class="gem-modal-panel" role="dialog" aria-modal="true" aria-labelledby="gemModalTitle">
+      <button class="gem-modal-close" type="button" id="gemModalClose" aria-label="關閉">×</button>
+      <img class="gem-modal-preview" id="gemModalImage" src="" alt="" />
+      <h4 class="gem-modal-title" id="gemModalTitle">寶石</h4>
+      <p class="gem-modal-text" id="gemModalText">這裡之後可以再串接每顆寶石的資訊。</p>
+    </div>
+  </div>
+
+
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+
+<script>
+  gsap.registerPlugin(ScrollTrigger);
+
+  const progressText = document.getElementById("progressText");
+  const progressFill = document.getElementById("progressFill");
+  const throneWrap = document.getElementById("throneWrap");
+  const buildHint = document.getElementById("buildHint");
+  const progressCardPercent = document.getElementById("progressCardPercent");
+  const currentValueText = document.getElementById("currentValueText");
+  const goalValueText = document.getElementById("goalValueText");
+  const gemButtons = gsap.utils.toArray(".gem-chip");
+  const gemModal = document.getElementById("gemModal");
+  const gemModalImage = document.getElementById("gemModalImage");
+  const gemModalTitle = document.getElementById("gemModalTitle");
+  const gemModalText = document.getElementById("gemModalText");
+  const gemModalClose = document.getElementById("gemModalClose");
+
+  const layers = gsap.utils.toArray([
+    ".platform",
+    ".base-gems",
+    ".seat-base",
+    ".arm-left",
+    ".arm-right",
+    ".back-core",
+    ".top-gem",
+    ".extra-8",
+    ".extra-9",
+    ".extra-10"
+  ]);
+
+  // 之後可直接把 currentValue 換成 API / 即時數據
+  const goalValue = 1000000;
+  const currentValue = 787890;
+  const targetProgress = gsap.utils.clamp(0, 1, currentValue / goalValue);
+
+  const gemStories = {
+    1: {
+      title: "💎 #01 初光之石 — 第一篇誕生",
+      text: `在一切還很安靜的時候，第一篇文章悄悄誕生了。\n\n那天，某某某把它放上來，沒有煙火，沒有掌聲，只有一點點期待，和一點點不確定。\n\n一開始，只有幾個人看見。有人默默讀完，有人輕輕轉發。大家很努力地一起推廣，終於讓這篇文章累積了 12,800 次瀏覽。\n\n那一刻，第一顆寶石亮了起來。它被安放在椅子的最底部，成為第一塊穩穩托住夢想的基石，也提醒著大家：開始，本身就是一種勇氣。`
+    },
+    2: {
+      title: "💎 #02 回聲之石 — 第一個分享",
+      text: `當第一篇文章被傳出去的那一刻，一個小小的回聲開始出現。\n\n有人說：「這篇很好。」有人說：「你也應該看看。」於是文字離開了原本的頁面，沿著一雙雙手，走向更遠的地方。\n\n那篇文章後來累積了 26,400 次瀏覽，像一顆被喚醒的小石頭，在群眾的掌心裡慢慢發亮。\n\n第二顆寶石因此誕生。它象徵著，不只是創作值得被珍惜，願意分享的人，也是在替夢想加上一束光。`
+    },
+    3: {
+      title: "💎 #03 連結之石 — 人與人的橋",
+      text: `某一天，有人因為這篇文章認識了彼此。\n\n留言開始出現，討論開始延伸。原本只是一段安靜的文字，後來竟然變成一座橋，讓不同的人在橋上相遇、駐足、交換心情。\n\n當瀏覽來到 58,000 次時，第三顆寶石悄悄生成。它散發的是柔柔的光，像在說：內容最珍貴的地方，不只是被看見，而是讓人連在一起。`
+    },
+    4: {
+      title: "💎 #04 微光之石 — 持續被看見",
+      text: `不是每一天都有熱鬧，但每天，都有人默默讀著。\n\n沒有爆發，沒有喧嘩，只有穩定地被看見。每一次點開、每一次停留，都像是替故事添上一點點光。\n\n當這份微小卻穩定的前進，累積到 103,000 次瀏覽時，第四顆寶石就誕生了。\n\n它提醒大家：慢慢來，也是一種很了不起的前進。`
+    },
+    5: {
+      title: "💎 #05 擴散之石 — 第一次被大量看見",
+      text: `某一天，一切突然變得不太一樣。\n\n有人轉發，有人推薦，文章像被風托著一樣，快速飛向更遠的地方。原本只在小範圍裡閃爍的光，忽然照亮了更多人的眼睛。\n\n當瀏覽衝上 176,000 次時，第五顆寶石亮了起來。它像一枚會發熱的種子，紀錄著大家一起用力推動的瞬間。\n\n它象徵著：當一群人願意一起用力，光就真的可以走得很遠。`
+    },
+    6: {
+      title: "💎 #06 共鳴之石 — 被理解的瞬間",
+      text: `有些人讀完後，停了一下。\n\n他們說：「這正是我想說的。」也有人說：「原來有人也這樣想。」那一刻，文章不再只是文章，而是心與心之間的回音。\n\n當共鳴一路累積到 248,000 次瀏覽，第六顆寶石誕生了。\n\n它代表著：被理解，是世界送給創作者最溫柔的禮物。`
+    },
+    7: {
+      title: "💎 #07 聚光之石 — 被看見的創作者",
+      text: `慢慢地，人們開始記住創作者的名字。\n\n那不再只是某篇文章的作者，而是一個被期待的新聲音。大家會想看看，下一篇又會帶來什麼樣的光。\n\n當總瀏覽來到 332,000 次時，第七顆寶石在椅背中央亮起，像一盞小小的聚光燈。\n\n它輕聲告訴大家：當你持續創作，世界會慢慢記住你。`
+    },
+    8: {
+      title: "💎 #08 交織之石 — 多篇作品的開始",
+      text: `不再只有一篇。\n\n新的作品出現，舊的作品仍被閱讀。它們彼此交織，像森林裡一條條亮起的小徑，越來越多，越來越深。\n\n當累積到 467,000 次瀏覽時，第八顆寶石嵌入了椅子的側邊。它不只屬於某一篇文章，而是屬於整個逐漸展開的創作世界。\n\n它象徵著：創作不會停在一頁，它會長出自己的森林。`
+    },
+    9: {
+      title: "💎 #09 流動之石 — 持續被傳遞",
+      text: `到了這個時候，內容已經開始自己流動。\n\n不需要刻意推動，它仍然會被分享、被看見。有人在不同時間讀到，有人在不同地方被感動，文字像河流一樣，安靜卻持續地往前走。\n\n當瀏覽來到 612,000 次時，第九顆寶石浮現。\n\n它代表著：真正的內容，會自己找到路。`
+    },
+    10: {
+      title: "💎 #10 擁抱之石 — 被更多人接住",
+      text: `越來越多人加入了這場旅程。\n\n有人創作，有人分享，有人靜靜閱讀，也有人熱烈回應。這已經不再只是某一個人的故事，而是一群人共同守護的光。\n\n當總瀏覽來到 746,000 次，第十顆寶石閃耀起來。它像一雙溫暖的手，把一路走來的努力都好好接住。\n\n它象徵著：當世界接住你，你就不再孤單。`
+    },
+    11: {
+      title: "💎 #11 火花之石 — 激發新的創作",
+      text: `有人讀完之後，也開始寫下自己的故事。\n\n一篇文章，點燃另一篇；一個念頭，喚醒更多念頭。創作不再只是結果，而是一場會彼此點亮的接力。\n\n當瀏覽累積到 851,000 次時，第十一顆寶石誕生了。\n\n它代表著：創作，會生出更多創作；光，會把光叫醒。`
+    },
+    12: {
+      title: "💎 #12 榮耀之石 — 接近完成",
+      text: `寶石之椅，已經接近完成。\n\n每一顆，都來自不同的努力；每一道光，都藏著一次閱讀、一次分享、一次願意幫忙把好內容帶向更遠地方的心意。\n\n當總瀏覽來到 932,000 次時，第十二顆寶石嵌入王座邊緣，整張椅子已經幾乎成形。\n\n它象徵著：我們一起，快完成一件很了不起的事。`
+    },
+    13: {
+      title: "👑 #13 王座之石 — 完成的那一刻",
+      text: `終於，最後一顆寶石落下。\n\n當數字來到 1,000,000，整張寶石之椅發出完整的光。那些曾經安靜誕生的文章、曾經被輕輕分享出去的連結、曾經默默幫忙推廣的人，全都在這一刻被照亮。\n\n這不是某一個人的成就，而是所有參與的人，一起完成的童話。\n\n最後一顆寶石會告訴大家：我們一起，把一個想法，變成了一個世界。`
+    }
+  };
+
+
+  const gemUnlockThresholds = [0.1, 0.18, 0.24, 0.3, 0.4, 0.5, 0.6, 0.7, 0.78, 0.84, 0.88, 0.9, 1];
+
+  const state = { progress: 0 };
+
+  const formatNumber = (value) => new Intl.NumberFormat("zh-TW").format(Math.round(value));
+
+  const getHintText = (progress) => {
+    if (progress >= 1) return "寶石王座建設完成 👑";
+    if (progress >= 0.9) return "最後一顆寶石即將落下 ✨";
+    if (progress >= 0.75) return "王座輪廓已經很完整了 💜";
+    if (progress >= 0.55) return "越來越多寶石被點亮了 💎";
+    if (progress >= 0.35) return "寶石王座正在慢慢成形 🌙";
+    if (progress >= 0.15) return "第一批寶石已經出現了 ✨";
+    return "寶石作品開始建設 ✨";
+  };
+
+  const showLayerByProgress = (progress) => {
+    const clamped = gsap.utils.clamp(0, 1, progress);
+    const exactIndex = clamped * (layers.length - 1);
+    const currentIndex = Math.floor(exactIndex);
+    const nextIndex = Math.min(layers.length - 1, currentIndex + 1);
+    const blend = exactIndex - currentIndex;
+
+    layers.forEach((layer, index) => {
+      let opacity = 0;
+
+      if (index === currentIndex) opacity = 1 - blend;
+      if (index === nextIndex) opacity = Math.max(opacity, blend);
+      if (currentIndex === nextIndex && index === currentIndex) opacity = 1;
+
+      gsap.set(layer, {
+        opacity,
+        x: 0,
+        y: 0,
+        scale: 1,
+        scaleY: 1,
+        rotate: 0,
+        transformOrigin: "center bottom"
+      });
+    });
+  };
+
+  const updateGemUnlocks = (progress) => {
+    gemButtons.forEach((button, index) => {
+      const unlocked = progress >= gemUnlockThresholds[index];
+      button.classList.toggle("is-locked", !unlocked);
+      button.disabled = !unlocked;
+      button.setAttribute("aria-disabled", String(!unlocked));
+    });
+  };
+
+  const renderProgress = (progress) => {
+    const value = Math.round(progress * 100);
+    const liveValue = goalValue * progress;
+
+    progressText.textContent = value + "%";
+    progressFill.style.width = value + "%";
+    progressCardPercent.textContent = value + "%";
+    currentValueText.textContent = formatNumber(liveValue);
+    goalValueText.textContent = formatNumber(goalValue);
+    buildHint.textContent = getHintText(progress);
+    buildHint.classList.toggle("is-celebrating", progress >= 1);
+
+    showLayerByProgress(progress);
+    updateGemUnlocks(progress);
+
+    gsap.set(".sparkles", {
+      opacity: 0.25 + progress * 0.75
+    });
+
+    gsap.set(throneWrap, {
+      scale: 1 + progress * 0.03
+    });
+  };
+
+  const openGemModal = (index) => {
+    const story = gemStories[index];
+
+    gemModalImage.src = `./assets/gem${String(index).padStart(2, "0")}.png`;
+    gemModalImage.alt = `寶石 ${index}`;
+    gemModalTitle.textContent = story?.title || `寶石 #${String(index).padStart(2, "0")}`;
+    gemModalText.textContent = story?.text || "這裡之後可以再串接每顆寶石的說明內容。";
+    gemModal.classList.add("is-open");
+    gemModal.setAttribute("aria-hidden", "false");
+  };
+
+  const closeGemModal = () => {
+    gemModal.classList.remove("is-open");
+    gemModal.setAttribute("aria-hidden", "true");
+  };
+
+  gsap.set(layers, {
+    x: 0,
+    y: 0,
+    scale: 1,
+    scaleY: 1,
+    rotate: 0,
+    opacity: 0,
+    transformOrigin: "center bottom"
+  });
+
+  gsap.set(".sparkles", {
+    opacity: 0.25
+  });
+
+  renderProgress(0);
+
+  gsap.to(state, {
+    progress: targetProgress,
+    duration: 2.2,
+    ease: "power2.out",
+    onUpdate: () => renderProgress(state.progress),
+    onComplete: () => {
+      if (targetProgress >= 1) {
+        renderProgress(1);
+      }
+
+      if (state.progress > 0.92) {
+        gsap.to(throneWrap, {
+          y: -2,
+          duration: 1.2,
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut"
+        });
+      }
+    }
+  });
+
+  gsap.to(".sparkles", {
+    y: -5,
+    duration: 1.6,
+    repeat: -1,
+    yoyo: true,
+    ease: "sine.inOut"
+  });
+
+  gemButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      if (button.disabled) return;
+      openGemModal(Number(button.dataset.gemIndex));
+    });
+  });
+
+  gemModalClose.addEventListener("click", closeGemModal);
+  gemModal.addEventListener("click", (event) => {
+    if (event.target === gemModal) closeGemModal();
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeGemModal();
+  });
+</script>
+</body>
+</html>
